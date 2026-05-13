@@ -1,7 +1,8 @@
 import './App.css'
 import WorkoutCard from './components/WorkoutCard'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
+// Default workouts to display if there are no workouts stored in local storage
 const initialWorkouts = [
   {
     title: 'Upper Body Day',
@@ -18,10 +19,24 @@ const initialWorkouts = [
 ]
 
 function App() {
-  const [workouts, setWorkouts] = useState(initialWorkouts)
+  //Check for workouts stored in the browser's local storage. If they exist, use those. Otherwise, use the default workouts.
+  const [workouts, setWorkouts] = useState(() => {
+    const savedWorkouts = localStorage.getItem('workouts')
+    
+    if (savedWorkouts) {
+      return JSON.parse(savedWorkouts)
+    }
+
+    return initialWorkouts
+  })
   const [title, setTitle] = useState('')
   const [exercise, setExercise] = useState('')
-  
+  // Whenever the workouts state changes, save the updated workouts to local storage
+  useEffect(() => {
+    localStorage.setItem('workouts', JSON.stringify(workouts))
+  }, [workouts])
+
+  // Add a new workout to the list of workouts and clear the input fields
   function addWorkout() {
     const newWorkout = {
       title: title,
@@ -33,6 +48,7 @@ function App() {
     setExercise('')
   }
 
+  // Delete a workout from the list of workouts based on the title
   function deleteWorkout(titleToDelete) {
     const updatedWorkouts = workouts.filter(
       (workout) => workout.title !== titleToDelete
@@ -66,6 +82,7 @@ function App() {
         Add Workout
       </button>
 
+      // Render a WorkoutCard for each workout in the workouts array
       {workouts.map((workout) => (
         <WorkoutCard
           key={workout.title}
