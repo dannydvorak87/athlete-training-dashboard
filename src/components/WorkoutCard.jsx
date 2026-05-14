@@ -1,14 +1,14 @@
-function WorkoutCard({ title, exercise, onDelete, onEdit }) {
+function WorkoutCard({ id, title, exercise, onDelete, onEdit }) {
     return (
         <div className="workout-card">
             <h2>{title}</h2>
             <p>{exercise}</p>
 
-            <button onClick={() => onDelete(title)}>
+            <button onClick={() => onDelete(id)}>
                 Delete
             </button>
 
-            <button onClick={() => onEdit(title)}>
+            <button onClick={() => onEdit(id)}>
                 Edit
             </button>
         </div>

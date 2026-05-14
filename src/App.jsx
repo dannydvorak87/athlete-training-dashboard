@@ -1,18 +1,22 @@
 import './App.css'
 import WorkoutCard from './components/WorkoutCard'
 import { useEffect, useState } from 'react'
+import WorkoutForm from './components/WorkoutForm'
 
 // Default workouts to display if there are no workouts stored in local storage
 const initialWorkouts = [
   {
+    id: crypto.randomUUID(),
     title: 'Upper Body Day',
     exercise: 'Bench Press - 3x5',
   },
   {
+    id: crypto.randomUUID(),
     title: 'Lower Body Day',
     exercise: 'Squat - 5x5',
   },
   {
+    id: crypto.randomUUID(),
     title: 'Conditioning Day',
     exercise: 'Bike Intervals - 10 rounds',
   },
@@ -41,8 +45,9 @@ function App() {
   function addWorkout() {
     if (editingWorkout) {
       const updatedWorkouts = workouts.map((workout) => {
-        if (workout.title === editingWorkout) {
+        if (workout.id === editingWorkout) {
           return {
+            ...workout,
             title: title,
             exercise: exercise,
           }
@@ -55,6 +60,7 @@ function App() {
       setEditingWorkout(null)
     } else {
       const newWorkout = {
+        id: crypto.randomUUID(),
         title: title,
         exercise: exercise,
       }
@@ -67,23 +73,23 @@ function App() {
   }
 
   // Delete a workout from the list of workouts based on the title
-  function deleteWorkout(titleToDelete) {
+  function deleteWorkout(idToDelete) {
     const updatedWorkouts = workouts.filter(
-      (workout) => workout.title !== titleToDelete
+      (workout) => workout.id !== idToDelete
     )
 
     setWorkouts(updatedWorkouts)
   }
 
   // Edit a workout with current title and exercise values, then clear the input fields and exit editing mode
-  function startEditing(titleToEdit) {
+  function startEditing(idToEdit) {
     const workoutToEdit = workouts.find(
-      (workout) => workout.title === titleToEdit
+      (workout) => workout.id === idToEdit
     )
 
     setTitle(workoutToEdit.title)
     setExercise(workoutToEdit.exercise)
-    setEditingWorkout(titleToEdit)
+    setEditingWorkout(idToEdit)
     }
 
   return (
@@ -93,28 +99,20 @@ function App() {
         Track workouts, review progress, and build better training habits.
       </p>
 
-      <input
-        type="text"
-        placeholder="Workout Title"
-        value={title}
-        onChange={(event) => setTitle(event.target.value)}
-      />
-
-      <input
-        type="text"
-        placeholder="Exercise"
-        value={exercise}
-        onChange={(event) => setExercise(event.target.value)}
-      />
-
-      <button onClick={addWorkout}>
-        {editingWorkout ? 'Update Workout' : 'Add Workout'}
-      </button>
+    <WorkoutForm
+      title={title}
+      exercise={exercise}
+      setTitle={setTitle}
+      setExercise={setExercise}
+      onSubmit={addWorkout}
+      editingWorkout={editingWorkout}
+    />
 
       {/* Render a WorkoutCard for each workout in the workouts array */}
       {workouts.map((workout) => (
         <WorkoutCard
           key={workout.title}
+          id={workout.id}
           title={workout.title}
           exercise={workout.exercise}
           onDelete={deleteWorkout}
